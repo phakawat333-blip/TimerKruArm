@@ -3,357 +3,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Science Quiz Leaderboard - Ultimate Edition</title>
+    <title>Science Competition - Timer by Kru Arm</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800;900&display=swap');
-
+        /* รีเซ็ตค่าเริ่มต้นและตั้งฟอนต์ */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Kanit', sans-serif;
         }
 
-        /* --- Animated Background --- */
         body {
-            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             min-height: 100vh;
-            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #0f2027);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background-color: #121212;
             color: #ffffff;
+            transition: background-color 0.3s ease;
+            position: relative;
+        }
+
+        /* โหมดเตือนภัย (เมื่อหมดเวลา) */
+        body.time-up-mode {
+            background-color: #3a0a0a;
+        }
+
+        /* ---------------- กราฟิกหัวข้อ Science Competition ---------------- */
+        .header-graphic {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 40px 20px;
-            overflow-x: hidden;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* --- Header & Neon Text --- */
-        .header {
+            margin-bottom: 30px;
             text-align: center;
-            margin-bottom: 40px;
-            z-index: 2;
         }
 
-        .header h1 {
-            font-size: 3.5rem;
-            font-weight: 900;
+        .accent-line {
+            width: 80px;
+            height: 4px;
+            background-color: #4a90e2;
+            margin-bottom: 16px;
+            border-radius: 2px;
+        }
+
+        .header-graphic h1 {
+            font-size: clamp(24px, 5vw, 42px);
+            font-weight: 700;
+            letter-spacing: 6px;
             text-transform: uppercase;
+            margin: 0;
+            color: #ffffff;
+        }
+
+        .header-graphic h1 span {
+            color: #4a90e2;
+            font-weight: 300;
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #888;
             letter-spacing: 4px;
-            color: #fff;
-            text-shadow: 
-                0 0 10px #00e5ff, 
-                0 0 20px #00e5ff, 
-                0 0 40px #00e5ff, 
-                0 0 80px #00e5ff;
-            animation: neonPulse 2s infinite alternate;
-        }
-
-        .header p {
-            font-size: 1.2rem;
-            color: #00e5ff;
-            margin-top: 10px;
-            font-weight: 600;
-            letter-spacing: 2px;
             text-transform: uppercase;
-            animation: pulseFade 1s infinite alternate;
         }
 
-        @keyframes neonPulse {
-            0% { text-shadow: 0 0 10px #00e5ff, 0 0 20px #00e5ff, 0 0 30px #00e5ff; }
-            100% { text-shadow: 0 0 20px #00e5ff, 0 0 40px #00e5ff, 0 0 60px #00e5ff, 0 0 80px #00e5ff; }
+        .subtitle span {
+            color: #4a90e2;
+            font-weight: 500;
         }
 
-        @keyframes pulseFade {
-            from { opacity: 0.6; }
-            to { opacity: 1; text-shadow: 0 0 10px #00e5ff; }
+        /* ---------------- ส่วนแสดงตัวเลขหลัก ---------------- */
+        .timer-display {
+            font-size: 22vw;
+            line-height: 1;
+            font-weight: 300;
+            letter-spacing: -2px;
+            margin-bottom: 50px;
+            font-variant-numeric: tabular-nums;
+            transition: color 0.3s ease;
         }
 
-        /* --- Leaderboard Container --- */
-        .leaderboard {
-            width: 100%;
-            max-width: 900px;
-            background: rgba(10, 15, 30, 0.4);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 0 40px rgba(0, 229, 255, 0.2);
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            position: relative;
-            z-index: 2;
+        body.time-up-mode .timer-display {
+            color: #ff4444;
+            animation: pulse-text 1s infinite alternate;
         }
 
-        .board-header {
-            display: grid;
-            grid-template-columns: 100px 1fr 180px;
-            padding: 10px 25px 20px 25px;
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: #00e5ff;
-            text-transform: uppercase;
-            border-bottom: 2px solid rgba(0, 229, 255, 0.3);
-            margin-bottom: 20px;
-            letter-spacing: 1px;
+        @keyframes pulse-text {
+            from { opacity: 1; }
+            to { opacity: 0.6; }
         }
 
-        .list-container {
-            position: relative;
+        /* ---------------- คอนเทนเนอร์รวมปุ่มควบคุม ---------------- */
+        .controls-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-        }
-
-        /* --- Team Rows --- */
-        .team-row {
-            display: grid;
-            grid-template-columns: 100px 1fr 180px;
-            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.08));
-            padding: 20px 25px;
-            border-radius: 15px;
-            align-items: center;
-            transform-origin: center;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: background 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .team-row:hover {
-            background: linear-gradient(90deg, rgba(0, 229, 255, 0.1), rgba(0, 229, 255, 0.2));
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
-            border: 1px solid rgba(0, 229, 255, 0.5);
-            transform: scale(1.01);
+            gap: 24px;
+            width: 100%;
+            max-width: 600px;
+            padding: 0 20px;
             z-index: 10;
         }
 
-        .rank {
-            font-size: 2rem;
-            font-weight: 900;
-            color: rgba(255,255,255,0.5);
+        .quick-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 12px;
         }
 
-        .team-name {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #fff;
-            letter-spacing: 1px;
+        button {
+            background-color: #2a2a2a;
+            color: #ffffff;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 16px 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .score-box {
-            text-align: right;
+        button:hover {
+            background-color: #3a3a3a;
+            border-color: #555;
         }
 
-        .score {
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: #00e5ff;
-            display: inline-block;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        button:active {
+            transform: scale(0.98);
         }
 
-        /* --- Highlight Top 3 --- */
-        .rank-1 {
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
-            border: 1px solid rgba(255, 215, 0, 0.5);
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.2);
-        }
-        .rank-1 .rank { color: #ffd700; text-shadow: 0 0 15px #ffd700; }
-        .rank-1 .score { color: #ffd700; text-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
-
-        .rank-2 {
-            background: linear-gradient(90deg, rgba(192, 192, 192, 0.1), rgba(192, 192, 192, 0.05));
-            border: 1px solid rgba(192, 192, 192, 0.4);
-        }
-        .rank-2 .rank { color: #c0c0c0; text-shadow: 0 0 10px #c0c0c0; }
-        .rank-2 .score { color: #c0c0c0; }
-
-        .rank-3 {
-            background: linear-gradient(90deg, rgba(205, 127, 50, 0.1), rgba(205, 127, 50, 0.05));
-            border: 1px solid rgba(205, 127, 50, 0.4);
-        }
-        .rank-3 .rank { color: #cd7f32; text-shadow: 0 0 10px #cd7f32; }
-        .rank-3 .score { color: #cd7f32; }
-
-        /* --- Score Update Animation (Pop Effect) --- */
-        .score-updated {
-            animation: scorePop 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-        @keyframes scorePop {
-            0% { transform: scale(1); color: #00e5ff; }
-            20% { transform: scale(1.6); color: #fff; text-shadow: 0 0 30px #fff, 0 0 50px #ffd700; }
-            100% { transform: scale(1); }
+        button.stop-btn {
+            background-color: #cc0000;
+            border-color: #cc0000;
+            color: white;
+            grid-column: 1 / -1;
         }
 
-        .loading {
+        button.stop-btn:hover {
+            background-color: #e60000;
+            border-color: #e60000;
+        }
+
+        /* ---------------- ส่วนตั้งเวลาเอง ---------------- */
+        .custom-time-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #333;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 12px;
+            font-size: 18px;
             text-align: center;
-            padding: 50px;
-            font-size: 1.5rem;
-            color: #00e5ff;
-            animation: pulseFade 1s infinite alternate;
+            background-color: #2a2a2a;
+            color: #ffffff;
+            border: 1px solid #444;
+            border-radius: 6px;
+            outline: none;
+            transition: border-color 0.2s ease;
         }
 
-        .error-msg { color: #ff5252; text-shadow: none; font-size: 1.2rem;}
+        input[type="number"]:focus {
+            border-color: #4a90e2;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+
+        .input-label {
+            font-size: 14px;
+            color: #888;
+        }
+
+        button.start-custom {
+            background-color: #4a90e2;
+            border-color: #4a90e2;
+            padding: 12px 24px;
+        }
+
+        button.start-custom:hover {
+            background-color: #357abd;
+            border-color: #357abd;
+        }
+
+        /* ---------------- Footer ด้านล่างสุด ---------------- */
+        .footer-credit {
+            position: absolute;
+            bottom: 20px;
+            font-size: 13px;
+            color: #555;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .footer-credit span {
+            color: #888;
+            font-weight: 500;
+        }
+
+        @media (max-width: 480px) {
+            .custom-time-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .input-wrapper {
+                justify-content: center;
+            }
+            .footer-credit {
+                position: relative;
+                margin-top: 40px;
+                bottom: 0;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>Science Quiz</h1>
-        <p>🔴 Live Leaderboard - Real-Time Update</p>
+    <!-- ไฟล์เสียงเตือน -->
+    <audio id="alarmSound" src="https://assets.mixkit.co/active_storage/sfx/989/989-preview.mp3" preload="auto" loop></audio>
+
+    <!-- กราฟิกหัวข้อโปรเจกต์ -->
+    <div class="header-graphic">
+        <div class="accent-line"></div>
+        <h1>SCIENCE <span>COMPETITION</span></h1>
+        <!-- ชื่อที่ใต้หัวข้อ -->
+        <div class="subtitle">By <span>Kru Arm Phakawat Songmuang</span></div>
     </div>
 
-    <div class="leaderboard">
-        <div class="board-header">
-            <div>RANK</div>
-            <div>TEAM</div>
-            <div style="text-align: right;">TOTAL SCORE</div>
+    <!-- หน้าจอแสดงเวลาขนาดใหญ่ -->
+    <div class="timer-display" id="display">00:00</div>
+
+    <!-- คอนเทนเนอร์ควบคุม -->
+    <div class="controls-wrapper">
+        
+        <!-- ปุ่มลัด -->
+        <div class="quick-buttons">
+            <button onclick="startTimer(30)">30 วิ</button>
+            <button onclick="startTimer(45)">45 วิ</button>
+            <button onclick="startTimer(60)">60 วิ</button>
+            <button onclick="startTimer(90)">90 วิ</button>
+            <button onclick="startTimer(120)">120 วิ</button>
+            <button class="stop-btn" onclick="stopTimer()">หยุด / รีเซ็ต</button>
         </div>
-        <div class="list-container" id="list-container">
-            <div class="loading">กำลังซิงค์ข้อมูลระบบ...</div>
+
+        <!-- ตั้งเวลาแบบกำหนดเอง -->
+        <div class="custom-time-panel">
+            <div class="input-wrapper">
+                <input type="number" id="customMinutes" placeholder="00" min="0">
+                <span class="input-label">นาที</span>
+            </div>
+            <div class="input-wrapper">
+                <input type="number" id="customSeconds" placeholder="00" min="0" max="59">
+                <span class="input-label">วินาที</span>
+            </div>
+            <button class="start-custom" onclick="startCustomTime()">เริ่ม</button>
         </div>
+
+    </div>
+
+    <!-- เครดิตด้านล่างสุดของหน้าจอ -->
+    <div class="footer-credit">
+        SYSTEM DESIGNED BY <span>KRU ARM PHAKAWAT SONGMUANG</span>
     </div>
 
     <script>
-        const sheetId = '1ZuGeps3OcgBX2IRylFD4P0dGjWZe_nIdArwtl0WPKpA';
-        const query = encodeURIComponent('select A, W');
-        const container = document.getElementById('list-container');
-        
-        let previousDataState = ""; // เก็บสถานะข้อมูลเพื่อเช็คว่ามีอะไรเปลี่ยนไหม
-        let scoreHistory = {}; // เก็บประวัติคะแนนของแต่ละทีมเพื่อทำอนิเมชันตอนคะแนนขึ้น
+        let countdown;
+        const display = document.getElementById('display');
+        const alarmSound = document.getElementById('alarmSound');
+        const body = document.body;
 
-        async function fetchData() {
-            try {
-                // เพิ่ม &cb=เวลาปัจจุบัน เพื่อบอกให้ Google ห้ามจำแคช (ดึงข้อมูลใหม่สดๆ ทุกครั้ง)
-                const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&tq=${query}&cb=${new Date().getTime()}`;
-                
-                const res = await fetch(url);
-                const text = await res.text();
+        function startTimer(seconds) {
+            clearInterval(countdown);
+            stopAlarm(); 
 
-                if(text.includes('<html') || text.includes('<!DOCTYPE')) {
-                    container.innerHTML = `<div class="loading error-msg">⚠️ การเชื่อมต่อถูกปฏิเสธ กรุณาเปิดแชร์ลิงก์ Sheet เป็น Public</div>`;
+            const now = Date.now();
+            const then = now + seconds * 1000;
+            
+            displayTimeLeft(seconds);
+
+            countdown = setInterval(() => {
+                const secondsLeft = Math.round((then - Date.now()) / 1000);
+
+                if (secondsLeft < 0) {
+                    clearInterval(countdown);
+                    triggerAlarm();
                     return;
                 }
 
-                const jsonStr = text.substring(47).slice(0, -2);
-                const json = JSON.parse(jsonStr);
-                
-                let data = [];
-                
-                json.table.rows.forEach(row => {
-                    if (!row.c || !row.c[0] || !row.c[1]) return;
-                    
-                    const teamNoRaw = row.c[0].v; 
-                    const scoreRaw = row.c[1].v;  
-                    
-                    if (teamNoRaw === 'No.' || typeof scoreRaw === 'string') return;
-                    
-                    const scoreNum = parseFloat(scoreRaw);
-
-                    if (teamNoRaw != null && !isNaN(scoreNum)) {
-                        data.push({
-                            id: teamNoRaw.toString(), 
-                            teamName: `ทีมหมายเลข ${teamNoRaw}`, 
-                            score: scoreNum
-                        });
-                    }
-                });
-
-                // เรียงลำดับจากคะแนนมากไปน้อย
-                data.sort((a, b) => b.score - a.score);
-                
-                // เช็คว่าข้อมูลเปลี่ยนไปจากวินาทีที่แล้วหรือไม่ (เพื่อลดการกระตุกของหน้าจอ)
-                const currentDataState = JSON.stringify(data);
-                if (currentDataState !== previousDataState) {
-                    renderLeaderboard(data);
-                    previousDataState = currentDataState; // อัปเดตสถานะล่าสุด
-                }
-
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
+                displayTimeLeft(secondsLeft);
+            }, 1000);
         }
 
-        function renderLeaderboard(newData) {
-            const oldPositions = {};
-            Array.from(container.children).forEach(child => {
-                if(child.dataset.id) {
-                    oldPositions[child.dataset.id] = child.getBoundingClientRect();
-                }
-            });
-
-            container.innerHTML = '';
+        function displayTimeLeft(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainderSeconds = seconds % 60;
             
-            newData.forEach((item, index) => {
-                const rank = index + 1;
-                let rankClass = '';
-                let rankDisplay = rank;
-
-                // ตกแต่ง Top 3
-                if(rank === 1) { rankClass = 'rank-1'; rankDisplay = '👑 1'; }
-                else if(rank === 2) { rankClass = 'rank-2'; rankDisplay = '🥈 2'; }
-                else if(rank === 3) { rankClass = 'rank-3'; rankDisplay = '🥉 3'; }
-
-                // เช็คว่าคะแนนเพิ่มขึ้นหรือไม่ เพื่อใส่คลาสอนิเมชัน Score Pop
-                let scoreClass = 'score';
-                if (scoreHistory[item.id] !== undefined && item.score > scoreHistory[item.id]) {
-                    scoreClass = 'score score-updated';
-                }
-                scoreHistory[item.id] = item.score; // บันทึกคะแนนไว้เช็ครอบหน้า
-
-                const row = document.createElement('div');
-                row.className = `team-row ${rankClass}`;
-                row.dataset.id = item.id; 
-                
-                row.innerHTML = `
-                    <div class="rank">${rankDisplay}</div>
-                    <div class="team-name">${item.teamName}</div>
-                    <div class="score-box"><div class="${scoreClass}">${item.score}</div></div>
-                `;
-                container.appendChild(row);
-            });
-
-            // FLIP Animation สร้างความสมูทในการสลับตำแหน่ง
-            Array.from(container.children).forEach(child => {
-                const id = child.dataset.id;
-                const oldRect = oldPositions[id];
-                if (oldRect) {
-                    const newRect = child.getBoundingClientRect();
-                    const deltaY = oldRect.top - newRect.top;
-
-                    if (deltaY !== 0) {
-                        child.style.transform = `translateY(${deltaY}px)`;
-                        child.style.transition = 'none';
-
-                        requestAnimationFrame(() => {
-                            child.style.transform = '';
-                            child.style.transition = 'transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease';
-                        });
-                    }
-                } else {
-                    // แถวใหม่ที่เพิ่งเข้ามา (Fade & Slide in)
-                    child.style.opacity = '0';
-                    child.style.transform = 'translateY(30px)';
-                    requestAnimationFrame(() => {
-                        child.style.transition = 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
-                        child.style.opacity = '1';
-                        child.style.transform = 'translateY(0)';
-                    });
-                }
-            });
+            const displayFormat = `${minutes < 10 ? '0' : ''}${minutes}:${remainderSeconds < 10 ? '0' : ''}${remainderSeconds}`;
+            
+            display.textContent = displayFormat;
+            document.title = `${displayFormat} - Timer`;
         }
 
-        // โหลดข้อมูลครั้งแรก
-        fetchData();
+        function startCustomTime() {
+            const mins = parseInt(document.getElementById('customMinutes').value) || 0;
+            const secs = parseInt(document.getElementById('customSeconds').value) || 0;
+            
+            if (mins === 0 && secs === 0) return;
+            
+            const totalSeconds = (mins * 60) + secs;
+            startTimer(totalSeconds);
+            
+            document.getElementById('customMinutes').value = '';
+            document.getElementById('customSeconds').value = '';
+        }
 
-        // รีเฟรชดึงข้อมูลใหม่ทุกๆ 1 วินาที (1000 มิลลิวินาที)
-        setInterval(fetchData, 1000);
+        function stopTimer() {
+            clearInterval(countdown);
+            displayTimeLeft(0);
+            stopAlarm();
+        }
 
+        function triggerAlarm() {
+            alarmSound.play().catch(error => console.log("Auto-play prevented by browser"));
+            body.classList.add('time-up-mode');
+        }
+
+        function stopAlarm() {
+            alarmSound.pause();
+            alarmSound.currentTime = 0;
+            body.classList.remove('time-up-mode');
+        }
     </script>
 </body>
 </html>
